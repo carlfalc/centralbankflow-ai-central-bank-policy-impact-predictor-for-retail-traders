@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CentralBankFlow AI - Central Bank Policy Impact Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(27, 54, 93, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: #FFD700;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #FFD700;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1B365D 0%, #2D4A73 100%);
+            color: white;
+            padding: 150px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23FFD700" stroke-width="0.3" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #E5E7EB;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 3rem;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #FFD700;
+            display: block;
+        }
+
+        .stat-label {
+            color: #E5E7EB;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: #F9FAFB;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1B365D;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #6B7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-color: #FFD700;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1B365D;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #6B7280;
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1B365D, #2D4A73);
+            color: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1B365D;
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 0;
+            background: #F9FAFB;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-color: #FFD700;
+        }
+
+        .pricing-card.featured {
+            border-color: #FFD700;
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1B365D;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1B365D;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            color: #6B7280;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: #6B7280;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #FFD700;
+            font-weight: 700;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1B365D, #2D4A73);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-btn:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            background: linear-gradient(135deg, #1B365D, #2D4A73);
+            color: white;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: #F9FAFB;
+            padding: 2rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #6B7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1B365D;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-info h4 {
+            color: #1B365D;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-info p {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 100px 0;
+            background: #F9FAFB;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            background: white;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1B365D;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            background: #F9FAFB;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: #1B365D;
+            color: white;
+            padding: 50px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #E5E7EB;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #FFD700;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #2D4A73;
+            padding-top: 2rem;
+            text-align: center;
+            color: #9CA3AF;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 5px;
+            background: #374151;
+            color: white;
+        }
+
+        .email-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1B365D;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .email-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .email-form {
+                flex-direction: column;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card, .pricing-card, .testimonial-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">CentralBankFlow AI</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <a href="#pricing" class="nav-cta">Start Free Trial</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Turn Central Bank Signals Into Profitable Trades</h1>
+                <p class="subtitle">The only AI platform that decodes Fed, ECB, and RBNZ communications into actionable trading signals. Stop losing money to institutional knowledge gaps.</p>
+                <a href="#pricing" class="hero-cta">
+                    Get Early Access
+                    <span>→</span>
+                </a>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">87%</span>
+                        <span class="stat-label">Policy Prediction Accuracy</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Central Banks Monitored</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Real-time Analysis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why Retail Traders Choose CentralBankFlow AI</h2>
+                <p class="section-subtitle">Professional-grade central bank intelligence, designed specifically for serious retail traders</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏛️</div>
+                    <h3>Central Bank Language Decoder</h3>
+                    <p>Our AI analyzes linguistic patterns in Fed minutes, ECB speeches, and RBNZ communications. When Powell shifts from "considerable" to "substantial," we catch it before the markets move 200+ pips.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>2-Hour to 2-Week Signals</h3>
+                    <p>Perfect timing for retail traders. Get probabilistic forecasts for the sweet spot window where central bank signals create maximum opportunity, not day-trading noise or long-term investment advice.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Pine Script & MT5 Integration</h3>
+                    <p>Fundamentally-driven indicators for TradingView and MetaTrader 5. Unlike pure technical analysis, our EAs incorporate central bank policy transmission mechanisms for smarter entries and exits.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Probabilistic Policy Forecasts</h3>
+                    <p>Get precise probabilities: "65% chance of 50bp cut in next meeting" rather than generic predictions. Our models analyze voting patterns, economic data, and communication shifts for accurate forecasting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">From central bank communications to profitable trades in three simple steps</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>AI Monitors Global Central Banks</h3>
+                    <p>Our specialized AI continuously analyzes speeches, minutes, and policy statements from the Fed, ECB, RBNZ, BOJ, and other major central banks in real-time.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Decode Policy Signals</h3>
+                    <p>Advanced NLP models trained on central bank communication patterns identify subtle language shifts that precede policy changes, translating "bank speak" into clear market implications.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Receive Actionable Alerts</h3>
+                    <p>Get instant notifications with trade setups, risk management, and probability scores directly to your trading platform via Pine Script indicators and MT5 Expert Advisors.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Choose Your Plan</h2>
+                <p class="section-subtitle">Transparent pricing that fits your trading budget</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Observer</h3>
+                    <div class="pricing-price">$29<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li>Real-time central bank alerts</li>
+                        <li>Basic policy impact scores</li>
+                        <li>5 major currency pairs coverage</li>
+                        <li>Email and SMS notifications</li>
+                        <li>Basic market analysis</li>
+                    </ul>
+                    <button class="pricing-btn">Start Free Trial</button>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <h3>Trader Pro</h3>
+                    <div class="pricing-price">$89<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li>All major and minor pairs</li>
+                        <li>Pine Script indicators</li>
+                        <li>MT5 Expert Advisors</li>
+                        <li>Historical backtesting data</li>
+                        <li>Policy change predictions</li>
+                        <li>Discord community access</li>
+                    </ul>
+                    <button class="pricing-btn">Start Free Trial</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Institution</h3>
+                    <div class="pricing-price">$299<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li>Full API access</li>
+                        <li>Custom alert parameters</li>
+                        <li>Proprietary economic models</li>
+                        <li>White-label options</li>
+                        <li>Priority support</li>
+                        <li>Multi-user accounts</li>
+                    </ul>
+                    <button class="pricing-btn">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Trusted by Professional Retail Traders</h2>
+                <p class="section-subtitle">Real results from traders who've transformed their performance</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Finally, a platform that gives retail traders the same central bank intelligence that institutions have. Caught the RBNZ dovish shift two days early and made 340 pips on NZD/USD."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MJ</div>
+                        <div class="testimonial-info">
+                            <h4>Marcus Johnson</h4>
+                            <p>Forex Trader, Auckland</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The Pine Script indicators are game-changing. Instead of guessing at Fed policy impacts, I now trade with 65-70% win rate on EUR/USD around ECB meetings. Worth every penny."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">SC</div>
+                        <div class="testimonial-info">
+                            <h4>Sarah Chen</h4>
+                            <p>Prop Trader, Singapore</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"As a financial advisor managing client portfolios, CentralBankFlow AI helps me time FX hedges perfectly. The probabilistic forecasts are incredibly accurate - saved us from major losses during the last Fed pivot."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">DR</div>
+                        <div class="testimonial-info">
+                            <h4>David Rodriguez</h4>
+                            <p>Financial Advisor, London</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How accurate are your central bank predictions?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Our AI models achieve 87% accuracy on policy direction predictions over a 2-week timeframe. We focus on probabilistic forecasts rather than binary predictions, giving you precise odds for informed decision-making.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Which central banks do you monitor?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        We monitor 15+ major central banks including Fed, ECB, RBNZ, BOJ, BOE, BOC, RBA, SNB, and others. Our focus is on English-speaking markets with high retail FX participation.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do I need coding experience for Pine Script indicators?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        No coding required. Our Pine Script indicators install directly into TradingView with one click. MT5 Expert Advisors are equally simple to deploy with full documentation provided.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How is this different from Bloomberg or Reuters?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Unlike generic news services, we specialize exclusively in central bank communication analysis. Our AI is trained specifically on policy transmission mechanisms and linguistic patterns that precede rate decisions.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What's the minimum account size to benefit?
+                        <span>+</span>
+                    </button>
+                    <div class="faq
