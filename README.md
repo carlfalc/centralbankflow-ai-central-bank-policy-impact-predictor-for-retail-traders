@@ -1,0 +1,2 @@
+# centralbankflow-ai-central-bank-policy-impact-predictor-for-retail-traders
+A specialized AI platform that monitors, analyzes, and predicts market movements based on central bank communications, policy changes, and macroeconomic data releases. Unlike generic news aggregators, this focuses specifically on translating central bank speak into actionable trading signals for forex, commodities, and indices. Perfect timing as ce
