@@ -1,0 +1,16 @@
+{
+  "name": "centralbankflow-ai-central-bank-policy-impact-predictor-for-retail-traders",
+  "version": "0.1.0",
+  "description": "A specialized AI platform that monitors, analyzes, and predicts market movements based on central bank communications, policy changes, and macroeconomic data releases. Unlike generic news aggregators,",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "ai",
+    "saas",
+    "the-firm"
+  ],
+  "author": "The Firm — AI Venture Studio",
+  "license": "MIT"
+}
